@@ -1,5 +1,4 @@
 @import "https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css";
-@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
 @media (prefers-color-scheme: dark) {
   :root {
     /* Update CSS variables */
