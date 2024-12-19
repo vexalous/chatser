@@ -84,31 +84,14 @@
             100% { transform: scale(0.5); opacity: 0; }
         }
 
-        .christmas-lights {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .glow {
+            position: fixed;
             width: 100%;
-            height: 50px;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,0,0,0.5), rgba(0,255,0,0.5));
+            mix-blend-mode: overlay;
             pointer-events: none;
-            overflow: hidden;
-        }
-
-        .bulb {
-            position: absolute;
-            width: 10px;
-            height: 20px;
-            background-color: red;
-            border-radius: 50% 50% 0 0;
-            transform: rotate(-45deg);
-            transform-origin: top center;
-            animation: glow 1s infinite;
-            cursor: pointer;
-        }
-
-        @keyframes glow {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            z-index: -1;
         }
 
         p {
@@ -154,35 +137,16 @@
             color: red;
             font-weight: bold;
         }
-
-        .play-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            font-size: 1.2em;
-            color: #ffffff;
-            background-color: #007bff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .play-button:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
     <h1 id="roadmap-title">our roadmap :) (also known as henrys fun part.)</h1>
-    <div class="christmas-lights"></div>
+    <div class="glow"></div>
     <p>Good Homepage <span class="yes">YES</span></p>
     <p>Account Creation <span class="no">X</span></p>
     <p>Basic Texting <span class="no">X</span></p>
     <p>Donations <span class="no">X</span></p>
     <p>Image Uploading But not saved to server <span class="no">X</span></p>
-
-    <!-- Play button -->
-    <button class="play-button" onclick="playSong()">Play 'We Wish You a Merry Christmas'</button>
 
     <script>
         const title = document.getElementById('roadmap-title');
@@ -191,8 +155,8 @@
 
         title.addEventListener('mousedown', () => {
             timeout = setTimeout(() => {
-                // Remove preference screen functionality
-            }, 1000);  // Holding for 1 second does nothing now
+                startSnowing();
+            }, 1000);  // Start snowing after holding for 1 second
         });
 
         title.addEventListener('mouseup', () => {
@@ -213,54 +177,44 @@
             setTimeout(() => trail.remove(), 500);
         });
 
-        function createChristmasLights() {
-            const lightsContainer = document.querySelector('.christmas-lights');
-            const bulbColors = ['red', 'green', 'blue', 'yellow', 'white'];
-            const bulbCount = 50;
-            const bellNotes = [
-                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', 
-                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', 
-                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', 
-                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  
-            ];
+        function startSnowing() {
+            const snowflakes = [];
+            const snowflakeCount = 100;
+            const gravity = 0.5;
+            const wind = 0.1;
 
-            for (let i = 0; i < bulbCount; i++) {
-                const bulb = document.createElement('div');
-                bulb.classList.add('bulb');
-                bulb.style.left = `${(i / bulbCount) * 100}%`;
-                bulb.style.backgroundColor = bulbColors[i % bulbColors.length];
-                bulb.style.animationDelay = `${Math.random() * 2}s`;
-                if (i < bellNotes.length) {
-                    bulb.setAttribute('data-note', bellNotes[i]);
-                    bulb.addEventListener('click', playNote);
-                }
-                lightsContainer.appendChild(bulb);
+            for (let i = 0; i < snowflakeCount; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.classList.add('snowflake');
+                snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                snowflake.style.top = `${Math.random() * window.innerHeight}px`;
+                snowflake.style.width = `${Math.random() * 5 + 2}px`;
+                snowflake.style.height = snowflake.style.width;
+                snowflake.style.position = 'absolute';
+                snowflake.style.backgroundColor = '#ffffff';
+                snowflake.style.borderRadius = '50%';
+                document.body.appendChild(snowflake);
+                snowflakes.push(snowflake);
             }
-        }
 
-        function playNote() {
-            const note = this.getAttribute('data-note');
-            const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
-            audio.onerror = () => console.error(`Failed to load audio file for note: ${note}`);
-            audio.play();
-        }
+            function updateSnowflakes() {
+                snowflakes.forEach(snowflake => {
+                    const rect = snowflake.getBoundingClientRect();
+                    const top = parseFloat(snowflake.style.top);
+                    const left = parseFloat(snowflake.style.left);
 
-        async function playSong() {
-            const notes = [
-                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', 
-                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', 
-                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', 
-                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  
-            ];
-            for (const note of notes) {
-                const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
-                audio.onerror = () => console.error(`Failed to load audio file for note: ${note}`);
-                audio.play();
-                await new Promise(resolve => setTimeout(resolve, 500)); // Delay for 500ms between notes
+                    snowflake.style.top = `${top + gravity}px`;
+                    snowflake.style.left = `${left + (Math.random() - 0.5) * wind}px`;
+
+                    if (rect.top > window.innerHeight) {
+                        snowflake.style.top = '0px';
+                        snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                    }
+                });
+                requestAnimationFrame(updateSnowflakes);
             }
+            updateSnowflakes();
         }
-
-        createChristmasLights();
     </script>
 </body>
 </html>
