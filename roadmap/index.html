@@ -75,13 +75,16 @@
             100% { transform: translate(2px, -4px) rotate(-2deg); }
         }
 
-        .glitter {
+        .glitter, .rainbow-trail {
             position: absolute;
             width: 5px;
             height: 5px;
-            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%);
             pointer-events: none;
             animation: glitter 1s linear infinite;
+        }
+
+        .rainbow-trail {
+            background: radial-gradient(circle, rgba(255,0,0,1) 0%, rgba(255,0,0,0) 80%);
         }
 
         @keyframes glitter {
@@ -185,6 +188,13 @@
             glitter.style.top = `${e.pageY}px`;
             document.body.appendChild(glitter);
             setTimeout(() => glitter.remove(), 1000);
+
+            const rainbowTrail = document.createElement('div');
+            rainbowTrail.classList.add('rainbow-trail');
+            rainbowTrail.style.left = `${e.pageX}px`;
+            rainbowTrail.style.top = `${e.pageY}px`;
+            document.body.appendChild(rainbowTrail);
+            setTimeout(() => rainbowTrail.remove(), 1000);
         });
 
         function startPongGame() {
