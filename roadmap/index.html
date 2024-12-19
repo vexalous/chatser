@@ -155,6 +155,21 @@
             font-weight: bold;
         }
 
+        .play-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1.2em;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -165,6 +180,9 @@
     <p>Basic Texting <span class="no">X</span></p>
     <p>Donations <span class="no">X</span></p>
     <p>Image Uploading But not saved to server <span class="no">X</span></p>
+
+    <!-- Play button -->
+    <button class="play-button" onclick="playSong()">Play 'We Wish You a Merry Christmas'</button>
 
     <script>
         const title = document.getElementById('roadmap-title');
@@ -200,10 +218,10 @@
             const bulbColors = ['red', 'green', 'blue', 'yellow', 'white'];
             const bulbCount = 50;
             const bellNotes = [
-                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', // We wish you a merry Christmas
-                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', // We wish you a merry Christmas
-                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', // And a happy new year
-                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  // Good tidings we bring
+                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', 
+                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', 
+                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', 
+                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  
             ];
 
             for (let i = 0; i < bulbCount; i++) {
@@ -224,6 +242,20 @@
             const note = this.getAttribute('data-note');
             const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
             audio.play();
+        }
+
+        async function playSong() {
+            const notes = [
+                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', 
+                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', 
+                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', 
+                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  
+            ];
+            for (const note of notes) {
+                const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
+                audio.play();
+                await new Promise(resolve => setTimeout(resolve, 500)); // Delay for 500ms between notes
+            }
         }
 
         createChristmasLights();
