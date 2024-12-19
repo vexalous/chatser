@@ -90,6 +90,32 @@
             100% { transform: scale(0.5); opacity: 0; }
         }
 
+        .christmas-lights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bulb {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50% 50% 0 0;
+            transform: rotate(-45deg);
+            transform-origin: top center;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         p {
             margin: 20px;
             font-size: 1.2em;
@@ -183,6 +209,7 @@
 </head>
 <body>
     <h1 id="roadmap-title">our roadmap :) (also known as henrys fun part.)</h1>
+    <div class="christmas-lights"></div>
     <p>Good Homepage <span class="yes">YES</span></p>
     <p>Account Creation <span class="no">X</span></p>
     <p>Basic Texting <span class="no">X</span></p>
@@ -312,6 +339,23 @@
 
             updateGame();
         }
+
+        function createChristmasLights() {
+            const lightsContainer = document.querySelector('.christmas-lights');
+            const bulbColors = ['red', 'green', 'blue', 'yellow', 'white'];
+            const bulbCount = 50;
+
+            for (let i = 0; i < bulbCount; i++) {
+                const bulb = document.createElement('div');
+                bulb.classList.add('bulb');
+                bulb.style.left = `${(i / bulbCount) * 100}%`;
+                bulb.style.backgroundColor = bulbColors[i % bulbColors.length];
+                bulb.style.animationDelay = `${Math.random() * 2}s`;
+                lightsContainer.appendChild(bulb);
+            }
+        }
+
+        createChristmasLights();
     </script>
 </body>
 </html>
