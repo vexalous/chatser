@@ -322,6 +322,7 @@
             function updatePlayer() {
                 player.dy += player.gravity;
                 player.y += player.dy;
+                player.x += player.dx;
 
                 if (player.y + player.height > canvas.height) {
                     player.y = canvas.height - player.height;
@@ -388,6 +389,43 @@
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                     player.dx = 0;
                 }
+            });
+
+            let touchStartX = null;
+            let touchStartY = null;
+
+            canvas.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+            });
+
+            canvas.addEventListener('touchmove', (e) => {
+                if (!touchStartX || !touchStartY) {
+                    return;
+                }
+
+                const touch = e.touches[0];
+                const touchEndX = touch.clientX;
+                const touchEndY = touch.clientY;
+
+                const diffX = touchStartX - touchEndX;
+                const diffY = touchStartY - touchEndY;
+
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX > 0) {
+                        player.dx = -player.speed;
+                    } else {
+                        player.dx = player.speed;
+                    }
+                }
+
+                touchStartX = null;
+                touchStartY = null;
+            });
+
+            canvas.addEventListener('touchend', () => {
+                player.dx = 0;
             });
 
             setInterval(createEnemy, 2000);
