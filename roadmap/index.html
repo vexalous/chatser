@@ -280,10 +280,12 @@
                 dy: 0,
                 gravity: 0.8,
                 jump: -15,
-                color: '#00ff00'
+                color: '#00ff00',
+                speed: 5
             };
 
             const platforms = [];
+            const enemies = [];
             const platformCount = 10;
             const platformWidth = 70;
             const platformHeight = 20;
@@ -310,6 +312,13 @@
                 });
             }
 
+            function drawEnemies() {
+                ctx.fillStyle = '#ff00ff';
+                enemies.forEach(enemy => {
+                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+                });
+            }
+
             function updatePlayer() {
                 player.dy += player.gravity;
                 player.y += player.dy;
@@ -317,6 +326,12 @@
                 if (player.y + player.height > canvas.height) {
                     player.y = canvas.height - player.height;
                     player.dy = player.jump;
+                }
+
+                if (player.x < 0) {
+                    player.x = 0;
+                } else if (player.x + player.width > canvas.width) {
+                    player.x = canvas.width - player.width;
                 }
 
                 platforms.forEach(platform => {
@@ -327,16 +342,55 @@
                         player.dy = player.jump;
                     }
                 });
+
+                enemies.forEach((enemy, index) => {
+                    if (player.y + player.height > enemy.y &&
+                        player.y < enemy.y + enemy.height &&
+                        player.x + player.width > enemy.x &&
+                        player.x < enemy.x + enemy.width) {
+                        enemies.splice(index, 1);
+                        // Reset player position to start
+                        player.x = canvas.width / 2;
+                        player.y = canvas.height - 30;
+                        player.dy = 0;
+                    }
+                });
             }
 
             function updateGame() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawPlayer();
                 drawPlatforms();
+                drawEnemies();
                 updatePlayer();
                 requestAnimationFrame(updateGame);
             }
 
+            function createEnemy() {
+                const enemy = {
+                    x: Math.random() * (canvas.width - 30),
+                    y: Math.random() * (canvas.height - 30),
+                    width: 30,
+                    height: 30
+                };
+                enemies.push(enemy);
+            }
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    player.dx = -player.speed;
+                } else if (e.key === 'ArrowRight') {
+                    player.dx = player.speed;
+                }
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    player.dx = 0;
+                }
+            });
+
+            setInterval(createEnemy, 2000);
             updateGame();
         }
 
