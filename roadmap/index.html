@@ -77,12 +77,12 @@
 
         .trail {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: radial-gradient(circle, rgba(255,0,0,1) 0%, rgba(255,0,0,0) 80%);
             pointer-events: none;
-            animation: trail 1s linear infinite;
+            animation: trail 0.5s linear infinite;
         }
 
         @keyframes trail {
@@ -134,7 +134,7 @@
             font-weight: bold;
         }
 
-        #pong-game {
+        #doodle-jump-game {
             display: none;
             position: fixed;
             top: 50%;
@@ -189,35 +189,22 @@
     <p>Donations <span class="no">X</span></p>
     <p>Image Uploading But not saved to server <span class="no">X</span></p>
 
-    <canvas id="pong-game"></canvas>
+    <canvas id="doodle-jump-game"></canvas>
 
     <!-- Preference screen -->
     <div id="preference-screen">
         <h2>Choose a Game</h2>
-        <div class="game-option" id="game-snake">
-            <img src="snake-preview.png" alt="Snake">
-            <p>Snake</p>
-        </div>
-        <div class="game-option" id="game-pong">
-            <img src="pong-preview.png" alt="Pong">
-            <p>Pong</p>
-        </div>
         <div class="game-option" id="game-doodle-jump">
             <img src="doodle-jump-preview.png" alt="Doodle Jump">
             <p>Doodle Jump</p>
-        </div>
-        <div class="game-option" id="game-tetris">
-            <img src="tetris-preview.png" alt="Tetris">
-            <p>Tetris</p>
         </div>
     </div>
 
     <script>
         const title = document.getElementById('roadmap-title');
         const preferenceScreen = document.getElementById('preference-screen');
-        const pongGame = document.getElementById('pong-game');
+        const doodleJumpGame = document.getElementById('doodle-jump-game');
         let timeout;
-        let score = 0;
         const colors = ['rgba(255,0,0,1)', 'rgba(255,165,0,1)', 'rgba(255,255,0,1)', 'rgba(0,128,0,1)', 'rgba(0,0,255,1)', 'rgba(75,0,130,1)', 'rgba(238,130,238,1)'];
 
         title.addEventListener('mousedown', () => {
@@ -244,182 +231,86 @@
             setTimeout(() => trail.remove(), 500);
         });
 
-        document.getElementById('game-snake').addEventListener('click', () => {
-            startSnakeGame();
-        });
-
-        document.getElementById('game-pong').addEventListener('click', () => {
-            startPongGame();
-        });
-
         document.getElementById('game-doodle-jump').addEventListener('click', () => {
             startDoodleJumpGame();
         });
 
-        document.getElementById('game-tetris').addEventListener('click', () => {
-            startTetrisGame();
-        });
-
-        function startPongGame() {
+        function startDoodleJumpGame() {
             preferenceScreen.style.display = 'none';
-            pongGame.style.display = 'block';
-            const canvas = document.getElementById("pong-game");
+            doodleJumpGame.style.display = 'block';
+            const canvas = document.getElementById("doodle-jump-game");
             const ctx = canvas.getContext("2d");
 
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
 
-            let paddleHeight = 10, paddleWidth = 75, paddleX = (canvas.width - paddleWidth) / 2;
-            let rightPressed = false, leftPressed = false;
-            let ballRadius = 10, x = canvas.width / 2, y = canvas.height - 30, dx = 2, dy = -2;
+            const player = {
+                x: canvas.width / 2,
+                y: canvas.height - 30,
+                width: 50,
+                height: 50,
+                dx: 0,
+                dy: 0,
+                gravity: 0.8,
+                jump: -15,
+                color: '#00ff00'
+            };
 
-            const blockRowCount = 5;
-            const blockColumnCount = 8;
-            const blockWidth = 75;
-            const blockHeight = 20;
-            const blockPadding = 10;
-            const blockOffsetTop = 30;
-            const blockOffsetLeft = 30;
-            const blocks = [];
+            const platforms = [];
+            const platformCount = 10;
+            const platformWidth = 70;
+            const platformHeight = 20;
 
-            for(let c = 0; c < blockColumnCount; c++) {
-                blocks[c] = [];
-                for(let r = 0; r < blockRowCount; r++) {
-                    blocks[c][r] = { x: 0, y: 0, status: 1, color: getRandomColor() };
+            for (let i = 0; i < platformCount; i++) {
+                platforms.push({
+                    x: Math.random() * (canvas.width - platformWidth),
+                    y: i * (canvas.height / platformCount),
+                    width: platformWidth,
+                    height: platformHeight,
+                    color: '#ff0000'
+                });
+            }
+
+            function drawPlayer() {
+                ctx.fillStyle = player.color;
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+            }
+
+            function drawPlatforms() {
+                ctx.fillStyle = '#ff0000';
+                platforms.forEach(platform => {
+                    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+                });
+            }
+
+            function updatePlayer() {
+                player.dy += player.gravity;
+                player.y += player.dy;
+
+                if (player.y + player.height > canvas.height) {
+                    player.y = canvas.height - player.height;
+                    player.dy = player.jump;
                 }
-            }
 
-            function getRandomColor() {
-                const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
-                return colors[Math.floor(Math.random() * colors.length)];
-            }
-
-            document.addEventListener("keydown", keyDownHandler, false);
-            document.addEventListener("keyup", keyUpHandler, false);
-
-            function keyDownHandler(e) {
-                if (e.key == "Right" || e.key == "ArrowRight") {
-                    rightPressed = true;
-                } else if (e.key == "Left" || e.key == "ArrowLeft") {
-                    leftPressed = true;
-                }
-            }
-
-            function keyUpHandler(e) {
-                if (e.key == "Right" || e.key == "ArrowRight") {
-                    rightPressed = false;
-                } else if (e.key == "Left" || e.key == "ArrowLeft") {
-                    leftPressed = false;
-                }
-            }
-
-            function drawBall() {
-                ctx.beginPath();
-                ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
-            }
-
-            function drawPaddle() {
-                ctx.beginPath();
-                ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-                ctx.fillStyle = "#0095DD";
-                ctx.fill();
-                ctx.closePath();
-            }
-
-            function drawBlocks() {
-                for(let c = 0; c < blockColumnCount; c++) {
-                    for(let r = 0; r < blockRowCount; r++) {
-                        if(blocks[c][r].status == 1) {
-                            const blockX = (c * (blockWidth + blockPadding)) + blockOffsetLeft;
-                            const blockY = (r * (blockHeight + blockPadding)) + blockOffsetTop;
-                            blocks[c][r].x = blockX;
-                            blocks[c][r].y = blockY;
-                            ctx.beginPath();
-                            ctx.rect(blockX, blockY, blockWidth, blockHeight);
-                            ctx.fillStyle = blocks[c][r].color;
-                            ctx.fill();
-                            ctx.closePath();
-                        }
+                platforms.forEach(platform => {
+                    if (player.y + player.height > platform.y &&
+                        player.y + player.height < platform.y + platform.height &&
+                        player.x + player.width > platform.x &&
+                        player.x < platform.x + platform.width) {
+                        player.dy = player.jump;
                     }
-                }
+                });
             }
 
-            function drawScore() {
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "#0095DD";
-                ctx.fillText("Score: " + score, 8, 20);
-            }
-
-            function collisionDetection() {
-                for(let c = 0; c < blockColumnCount; c++) {
-                    for(let r = 0; r < blockRowCount; r++) {
-                        const b = blocks[c][r];
-                        if(b.status == 1) {
-                            if(x > b.x && x < b.x + blockWidth && y > b.y && y < b.y + blockHeight) {
-                                dy = -dy;
-                                b.status = 0;
-                                score++;
-                                if(score == blockRowCount * blockColumnCount) {
-                                    alert("YOU WIN, CONGRATULATIONS!");
-                                    document.location.reload();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            function draw() {
+            function updateGame() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawBlocks();
-                drawBall();
-                drawPaddle();
-                drawScore();
-                collisionDetection();
-
-                if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                    dx = -dx;
-                }
-                if (y + dy < ballRadius) {
-                    dy = -dy;
-                } else if (y + dy > canvas.height - ballRadius) {
-                    if (x > paddleX && x < paddleX + paddleWidth) {
-                        dy = -dy;
-                    } else {
-                        document.location.reload();
-                    }
-                }
-
-                if (rightPressed && paddleX < canvas.width - paddleWidth) {
-                    paddleX += 7;
-                } else if (leftPressed && paddleX > 0) {
-                    paddleX -= 7;
-                }
-
-                x += dx;
-                y += dy;
-                requestAnimationFrame(draw);
+                drawPlayer();
+                drawPlatforms();
+                updatePlayer();
+                requestAnimationFrame(updateGame);
             }
 
-            draw();
-        }
-
-        function startSnakeGame() {
-            preferenceScreen.style.display = 'none';
-            alert("Snake game placeholder. Implement Snake game logic here.");
-        }
-
-        function startDoodleJumpGame() {
-            preferenceScreen.style.display = 'none';
-            alert("Doodle Jump game placeholder. Implement Doodle Jump game logic here.");
-        }
-
-        function startTetrisGame() {
-            preferenceScreen.style.display = 'none';
-            alert("Tetris game placeholder. Implement Tetris game logic here.");
+            updateGame();
         }
     </script>
 </body>
