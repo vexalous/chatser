@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vinyl Audio Player</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+    .container {
+      text-align: center;
+    }
+    .vinyl {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: #000;
+      border: 5px solid #333;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      margin: 0 auto;
+      animation: spin 5s linear infinite;
+      overflow: hidden;
+    }
+    .vinyl img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .hidden {
+      display: none;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    input {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Drag and Drop Audio Player</h1>
+    <div class="vinyl" id="vinyl">
+      <img src="" alt="Album Cover" id="album-cover" class="hidden">
+    </div>
+    <p>Drag and drop an audio file and a cover image.</p>
+    <input type="file" id="audio-input" accept="audio/*">
+    <input type="file" id="cover-input" accept="image/*">
+    <audio id="audio" controls class="hidden"></audio>
+  </div>
+
+  <script>
+    const audioInput = document.getElementById('audio-input');
+    const coverInput = document.getElementById('cover-input');
+    const audio = document.getElementById('audio');
+    const vinyl = document.getElementById('vinyl');
+    const albumCover = document.getElementById('album-cover');
+
+    audioInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const audioURL = URL.createObjectURL(file);
+        audio.src = audioURL;
+        audio.classList.remove('hidden');
+        audio.play();
+      }
+    });
+
+    coverInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const coverURL = URL.createObjectURL(file);
+        albumCover.src = coverURL;
+        albumCover.classList.remove('hidden');
+        vinyl.style.backgroundImage = `url('${coverURL}')`;
+      }
+    });
+  </script>
+</body>
+</html>
