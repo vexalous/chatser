@@ -75,19 +75,17 @@
             100% { transform: translate(2px, -4px) rotate(-2deg); }
         }
 
-        .glitter, .rainbow-trail {
+        .trail {
             position: absolute;
-            width: 5px;
-            height: 5px;
-            pointer-events: none;
-            animation: glitter 1s linear infinite;
-        }
-
-        .rainbow-trail {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
             background: radial-gradient(circle, rgba(255,0,0,1) 0%, rgba(255,0,0,0) 80%);
+            pointer-events: none;
+            animation: trail 1s linear infinite;
         }
 
-        @keyframes glitter {
+        @keyframes trail {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(0.5); opacity: 0; }
         }
@@ -165,6 +163,7 @@
         const pongGame = document.getElementById('pong-game');
         let timeout;
         let score = 0;
+        const colors = ['rgba(255,0,0,1)', 'rgba(255,165,0,1)', 'rgba(255,255,0,1)', 'rgba(0,128,0,1)', 'rgba(0,0,255,1)', 'rgba(75,0,130,1)', 'rgba(238,130,238,1)'];
 
         title.addEventListener('mousedown', () => {
             timeout = setTimeout(() => {
@@ -182,19 +181,13 @@
         });
 
         document.addEventListener('mousemove', (e) => {
-            const glitter = document.createElement('div');
-            glitter.classList.add('glitter');
-            glitter.style.left = `${e.pageX}px`;
-            glitter.style.top = `${e.pageY}px`;
-            document.body.appendChild(glitter);
-            setTimeout(() => glitter.remove(), 1000);
-
-            const rainbowTrail = document.createElement('div');
-            rainbowTrail.classList.add('rainbow-trail');
-            rainbowTrail.style.left = `${e.pageX}px`;
-            rainbowTrail.style.top = `${e.pageY}px`;
-            document.body.appendChild(rainbowTrail);
-            setTimeout(() => rainbowTrail.remove(), 1000);
+            const trail = document.createElement('div');
+            trail.classList.add('trail');
+            trail.style.left = `${e.pageX}px`;
+            trail.style.top = `${e.pageY}px`;
+            trail.style.background = `radial-gradient(circle, ${colors[Math.floor(Math.random() * colors.length)]} 0%, rgba(255,255,255,0) 80%)`;
+            document.body.appendChild(trail);
+            setTimeout(() => trail.remove(), 500);
         });
 
         function startPongGame() {
