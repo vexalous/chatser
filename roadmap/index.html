@@ -109,6 +109,7 @@
             transform: rotate(-45deg);
             transform-origin: top center;
             animation: glow 1s infinite;
+            cursor: pointer;
         }
 
         @keyframes glow {
@@ -204,6 +205,12 @@
             const lightsContainer = document.querySelector('.christmas-lights');
             const bulbColors = ['red', 'green', 'blue', 'yellow', 'white'];
             const bulbCount = 50;
+            const bellNotes = [
+                'C4', 'C4', 'D4', 'C4', 'F4', 'E4', // We wish you a merry Christmas
+                'C4', 'C4', 'D4', 'C4', 'G4', 'F4', // We wish you a merry Christmas
+                'A4', 'A4', 'G4', 'F4', 'E4', 'D4', // And a happy new year
+                'G4', 'G4', 'F4', 'E4', 'F4', 'E4'  // Good tidings we bring
+            ];
 
             for (let i = 0; i < bulbCount; i++) {
                 const bulb = document.createElement('div');
@@ -211,8 +218,18 @@
                 bulb.style.left = `${(i / bulbCount) * 100}%`;
                 bulb.style.backgroundColor = bulbColors[i % bulbColors.length];
                 bulb.style.animationDelay = `${Math.random() * 2}s`;
+                if (i < bellNotes.length) {
+                    bulb.setAttribute('data-note', bellNotes[i]);
+                    bulb.addEventListener('click', playNote);
+                }
                 lightsContainer.appendChild(bulb);
             }
+        }
+
+        function playNote() {
+            const note = this.getAttribute('data-note');
+            const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
+            audio.play();
         }
 
         createChristmasLights();
