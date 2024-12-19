@@ -146,6 +146,39 @@
             border: 2px solid #fff;
             border-radius: 10px;
         }
+
+        /* Preference screen styles */
+        #preference-screen {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .game-option {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 20px;
+            cursor: pointer;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            background-color: #333;
+        }
+
+        .game-option img {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -158,8 +191,30 @@
 
     <canvas id="pong-game"></canvas>
 
+    <!-- Preference screen -->
+    <div id="preference-screen">
+        <h2>Choose a Game</h2>
+        <div class="game-option" id="game-snake">
+            <img src="snake-preview.png" alt="Snake">
+            <p>Snake</p>
+        </div>
+        <div class="game-option" id="game-pong">
+            <img src="pong-preview.png" alt="Pong">
+            <p>Pong</p>
+        </div>
+        <div class="game-option" id="game-doodle-jump">
+            <img src="doodle-jump-preview.png" alt="Doodle Jump">
+            <p>Doodle Jump</p>
+        </div>
+        <div class="game-option" id="game-tetris">
+            <img src="tetris-preview.png" alt="Tetris">
+            <p>Tetris</p>
+        </div>
+    </div>
+
     <script>
         const title = document.getElementById('roadmap-title');
+        const preferenceScreen = document.getElementById('preference-screen');
         const pongGame = document.getElementById('pong-game');
         let timeout;
         let score = 0;
@@ -167,9 +222,8 @@
 
         title.addEventListener('mousedown', () => {
             timeout = setTimeout(() => {
-                pongGame.style.display = 'block';
-                startPongGame();
-            }, 1000);  // Show game after holding for 1 second
+                preferenceScreen.style.display = 'block';
+            }, 1000);  // Show preference screen after holding for 1 second
         });
 
         title.addEventListener('mouseup', () => {
@@ -190,7 +244,25 @@
             setTimeout(() => trail.remove(), 500);
         });
 
+        document.getElementById('game-snake').addEventListener('click', () => {
+            startSnakeGame();
+        });
+
+        document.getElementById('game-pong').addEventListener('click', () => {
+            startPongGame();
+        });
+
+        document.getElementById('game-doodle-jump').addEventListener('click', () => {
+            startDoodleJumpGame();
+        });
+
+        document.getElementById('game-tetris').addEventListener('click', () => {
+            startTetrisGame();
+        });
+
         function startPongGame() {
+            preferenceScreen.style.display = 'none';
+            pongGame.style.display = 'block';
             const canvas = document.getElementById("pong-game");
             const ctx = canvas.getContext("2d");
 
@@ -333,6 +405,21 @@
             }
 
             draw();
+        }
+
+        function startSnakeGame() {
+            preferenceScreen.style.display = 'none';
+            alert("Snake game placeholder. Implement Snake game logic here.");
+        }
+
+        function startDoodleJumpGame() {
+            preferenceScreen.style.display = 'none';
+            alert("Doodle Jump game placeholder. Implement Doodle Jump game logic here.");
+        }
+
+        function startTetrisGame() {
+            preferenceScreen.style.display = 'none';
+            alert("Tetris game placeholder. Implement Tetris game logic here.");
         }
     </script>
 </body>
