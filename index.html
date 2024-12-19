@@ -11,21 +11,51 @@
   <style>
     @keyframes moveBlobs {
       0%, 100% {
-        transform: translateY(0) translateX(0);
+        transform: translateY(0) translateX(0) scale(1);
       }
       25% {
-        transform: translateY(-20px) translateX(20px);
+        transform: translateY(-20px) translateX(20px) scale(1.1);
       }
       50% {
-        transform: translateY(20px) translateX(-20px);
+        transform: translateY(20px) translateX(-20px) scale(0.9);
       }
       75% {
-        transform: translateY(-20px) translateX(-20px);
+        transform: translateY(-20px) translateX(-20px) scale(1.2);
+      }
+    }
+
+    @keyframes spawnBlobs {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes despawnBlobs {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0);
       }
     }
 
     .blob {
       animation: moveBlobs 10s infinite alternate ease-in-out;
+    }
+
+    .blob-spawn {
+      animation: spawnBlobs 2s forwards;
+    }
+
+    .blob-despawn {
+      animation: despawnBlobs 2s forwards;
     }
   </style>
 </head>
@@ -91,7 +121,7 @@
   </header>
 
   <div class="relative isolate px-6 pt-14 lg:px-8">
-    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 blob" aria-hidden="true">
+    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 blob blob-spawn" aria-hidden="true">
       <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
     </div>
     <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
@@ -109,7 +139,7 @@
         </div>
       </div>
     </div>
-    <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] blob" aria-hidden="true">
+    <div class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)] blob blob-despawn" aria-hidden="true">
       <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"></div>
     </div>
   </div>
@@ -135,6 +165,23 @@
       mobileMenu.classList.add('hidden');
     }
   });
+
+  // JavaScript for blob spawning and despawning
+  function spawnBlob() {
+    const blob = document.createElement('div');
+    blob.classList.add('absolute', 'inset-x-0', '-top-40', '-z-10', 'transform-gpu', 'overflow-hidden', 'blur-3xl', 'sm:-top-80', 'blob', 'blob-spawn');
+    blob.innerHTML = '<div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>';
+    document.querySelector('body').appendChild(blob);
+    setTimeout(() => {
+      blob.classList.remove('blob-spawn');
+      blob.classList.add('blob-despawn');
+      setTimeout(() => {
+        blob.remove();
+      }, 2000);
+    }, 5000);
+  }
+
+  setInterval(spawnBlob, 10000);
 </script>
 </body>
 </html>
