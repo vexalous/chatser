@@ -182,7 +182,9 @@
             const snowflakeCount = 100;
             const gravity = 0.5;
             const wind = 0.1;
+            const pile = [];
 
+            // Create snowflakes
             for (let i = 0; i < snowflakeCount; i++) {
                 const snowflake = document.createElement('div');
                 snowflake.classList.add('snowflake');
@@ -197,6 +199,7 @@
                 snowflakes.push(snowflake);
             }
 
+            // Update snowflakes
             function updateSnowflakes() {
                 snowflakes.forEach(snowflake => {
                     const rect = snowflake.getBoundingClientRect();
@@ -206,9 +209,12 @@
                     snowflake.style.top = `${top + gravity}px`;
                     snowflake.style.left = `${left + (Math.random() - 0.5) * wind}px`;
 
-                    if (rect.top > window.innerHeight) {
-                        snowflake.style.top = '0px';
-                        snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                    if (rect.top > window.innerHeight - 10) {
+                        if (!pile[rect.left]) {
+                            pile[rect.left] = [];
+                        }
+                        pile[rect.left].push(snowflake);
+                        snowflake.style.top = `${window.innerHeight - 10 - pile[rect.left].length * 10}px`;
                     }
                 });
                 requestAnimationFrame(updateSnowflakes);
