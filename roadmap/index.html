@@ -241,6 +241,7 @@
         function playNote() {
             const note = this.getAttribute('data-note');
             const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
+            audio.onerror = () => console.error(`Failed to load audio file for note: ${note}`);
             audio.play();
         }
 
@@ -253,6 +254,7 @@
             ];
             for (const note of notes) {
                 const audio = new Audio(`https://pianokeyboard.io/static/audio/${note}.mp3`);
+                audio.onerror = () => console.error(`Failed to load audio file for note: ${note}`);
                 audio.play();
                 await new Promise(resolve => setTimeout(resolve, 500)); // Delay for 500ms between notes
             }
