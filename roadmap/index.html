@@ -8,6 +8,7 @@
             font-family: 'Funnel Display', Arial, sans-serif;
             background-color: #121212;
             color: #ffffff;
+            overflow: hidden;
         }
 
         h1 {
@@ -72,6 +73,20 @@
             80% { transform: translate(-2px, -2px) rotate(2deg); }
             90% { transform: translate(2px, 4px) rotate(0deg); }
             100% { transform: translate(2px, -4px) rotate(-2deg); }
+        }
+
+        .glitter {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 80%);
+            pointer-events: none;
+            animation: glitter 1s linear infinite;
+        }
+
+        @keyframes glitter {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.5); opacity: 0; }
         }
 
         p {
@@ -161,6 +176,15 @@
 
         title.addEventListener('mouseleave', () => {
             clearTimeout(timeout);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const glitter = document.createElement('div');
+            glitter.classList.add('glitter');
+            glitter.style.left = `${e.pageX}px`;
+            glitter.style.top = `${e.pageY}px`;
+            document.body.appendChild(glitter);
+            setTimeout(() => glitter.remove(), 1000);
         });
 
         function startPongGame() {
