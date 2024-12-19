@@ -108,10 +108,10 @@
             border-radius: 50% 50% 0 0;
             transform: rotate(-45deg);
             transform-origin: top center;
-            animation: blink 1s infinite;
+            animation: glow 1s infinite;
         }
 
-        @keyframes blink {
+        @keyframes glow {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
@@ -160,51 +160,6 @@
             font-weight: bold;
         }
 
-        #doodle-jump-game {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background-color: #000;
-            border: 2px solid #fff;
-            border-radius: 10px;
-        }
-
-        /* Preference screen styles */
-        #preference-screen {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background-color: rgba(0, 0, 0, 0.9);
-            border: 2px solid #fff;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .game-option {
-            display: inline-block;
-            width: 100px;
-            height: 100px;
-            margin: 20px;
-            cursor: pointer;
-            border: 2px solid #fff;
-            border-radius: 10px;
-            background-color: #333;
-        }
-
-        .game-option img {
-            width: 100%;
-            height: 100%;
-            border-radius: 10px;
-        }
     </style>
 </head>
 <body>
@@ -216,28 +171,15 @@
     <p>Donations <span class="no">X</span></p>
     <p>Image Uploading But not saved to server <span class="no">X</span></p>
 
-    <canvas id="doodle-jump-game"></canvas>
-
-    <!-- Preference screen -->
-    <div id="preference-screen">
-        <h2>Choose a Game</h2>
-        <div class="game-option" id="game-doodle-jump">
-            <img src="doodle-jump-preview.png" alt="Doodle Jump">
-            <p>Doodle Jump</p>
-        </div>
-    </div>
-
     <script>
         const title = document.getElementById('roadmap-title');
-        const preferenceScreen = document.getElementById('preference-screen');
-        const doodleJumpGame = document.getElementById('doodle-jump-game');
         let timeout;
         const colors = ['rgba(255,0,0,1)', 'rgba(255,165,0,1)', 'rgba(255,255,0,1)', 'rgba(0,128,0,1)', 'rgba(0,0,255,1)', 'rgba(75,0,130,1)', 'rgba(238,130,238,1)'];
 
         title.addEventListener('mousedown', () => {
             timeout = setTimeout(() => {
-                preferenceScreen.style.display = 'block';
-            }, 1000);  // Show preference screen after holding for 1 second
+                // Remove preference screen functionality
+            }, 1000);  // Holding for 1 second does nothing now
         });
 
         title.addEventListener('mouseup', () => {
@@ -257,180 +199,6 @@
             document.body.appendChild(trail);
             setTimeout(() => trail.remove(), 500);
         });
-
-        document.getElementById('game-doodle-jump').addEventListener('click', () => {
-            startDoodleJumpGame();
-        });
-
-        function startDoodleJumpGame() {
-            preferenceScreen.style.display = 'none';
-            doodleJumpGame.style.display = 'block';
-            const canvas = document.getElementById("doodle-jump-game");
-            const ctx = canvas.getContext("2d");
-
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-
-            const player = {
-                x: canvas.width / 2,
-                y: canvas.height - 30,
-                width: 50,
-                height: 50,
-                dx: 0,
-                dy: 0,
-                gravity: 0.8,
-                jump: -15,
-                color: '#00ff00',
-                speed: 5
-            };
-
-            const platforms = [];
-            const enemies = [];
-            const platformCount = 10;
-            const platformWidth = 70;
-            const platformHeight = 20;
-
-            for (let i = 0; i < platformCount; i++) {
-                platforms.push({
-                    x: Math.random() * (canvas.width - platformWidth),
-                    y: i * (canvas.height / platformCount),
-                    width: platformWidth,
-                    height: platformHeight,
-                    color: '#ff0000'
-                });
-            }
-
-            function drawPlayer() {
-                ctx.fillStyle = player.color;
-                ctx.fillRect(player.x, player.y, player.width, player.height);
-            }
-
-            function drawPlatforms() {
-                ctx.fillStyle = '#ff0000';
-                platforms.forEach(platform => {
-                    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-                });
-            }
-
-            function drawEnemies() {
-                ctx.fillStyle = '#ff00ff';
-                enemies.forEach(enemy => {
-                    ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-                });
-            }
-
-            function updatePlayer() {
-                player.dy += player.gravity;
-                player.y += player.dy;
-                player.x += player.dx;
-
-                if (player.y + player.height > canvas.height) {
-                    player.y = canvas.height - player.height;
-                    player.dy = player.jump;
-                }
-
-                if (player.x < 0) {
-                    player.x = 0;
-                } else if (player.x + player.width > canvas.width) {
-                    player.x = canvas.width - player.width;
-                }
-
-                platforms.forEach(platform => {
-                    if (player.y + player.height > platform.y &&
-                        player.y + player.height < platform.y + platform.height &&
-                        player.x + player.width > platform.x &&
-                        player.x < platform.x + platform.width) {
-                        player.dy = player.jump;
-                    }
-                });
-
-                enemies.forEach((enemy, index) => {
-                    if (player.y + player.height > enemy.y &&
-                        player.y < enemy.y + enemy.height &&
-                        player.x + player.width > enemy.x &&
-                        player.x < enemy.x + enemy.width) {
-                        enemies.splice(index, 1);
-                        // Reset player position to start
-                        player.x = canvas.width / 2;
-                        player.y = canvas.height - 30;
-                        player.dy = 0;
-                    }
-                });
-            }
-
-            function updateGame() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawPlayer();
-                drawPlatforms();
-                drawEnemies();
-                updatePlayer();
-                requestAnimationFrame(updateGame);
-            }
-
-            function createEnemy() {
-                const enemy = {
-                    x: Math.random() * (canvas.width - 30),
-                    y: Math.random() * (canvas.height - 30),
-                    width: 30,
-                    height: 30
-                };
-                enemies.push(enemy);
-            }
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') {
-                    player.dx = -player.speed;
-                } else if (e.key === 'ArrowRight') {
-                    player.dx = player.speed;
-                }
-            });
-
-            document.addEventListener('keyup', (e) => {
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                    player.dx = 0;
-                }
-            });
-
-            let touchStartX = null;
-            let touchStartY = null;
-
-            canvas.addEventListener('touchstart', (e) => {
-                const touch = e.touches[0];
-                touchStartX = touch.clientX;
-                touchStartY = touch.clientY;
-            });
-
-            canvas.addEventListener('touchmove', (e) => {
-                if (!touchStartX || !touchStartY) {
-                    return;
-                }
-
-                const touch = e.touches[0];
-                const touchEndX = touch.clientX;
-                const touchEndY = touch.clientY;
-
-                const diffX = touchStartX - touchEndX;
-                const diffY = touchStartY - touchEndY;
-
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (diffX > 0) {
-                        player.dx = -player.speed;
-                    } else {
-                        player.dx = player.speed;
-                    }
-                }
-
-                touchStartX = null;
-                touchStartY = null;
-            });
-
-            canvas.addEventListener('touchend', () => {
-                player.dx = 0;
-            });
-
-            setInterval(createEnemy, 2000);
-            updateGame();
-        }
 
         function createChristmasLights() {
             const lightsContainer = document.querySelector('.christmas-lights');
