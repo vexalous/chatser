@@ -27,8 +27,8 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
       position: relative;
       margin: 0 auto;
-      animation: spin 5s linear infinite;
       overflow: hidden;
+      cursor: grab;
     }
     .vinyl img {
       width: 100%;
@@ -46,8 +46,8 @@
         transform: rotate(360deg);
       }
     }
-    input {
-      margin-top: 20px;
+    .spinning {
+      animation: spin 5s linear infinite;
     }
   </style>
 </head>
@@ -57,38 +57,91 @@
     <div class="vinyl" id="vinyl">
       <img src="" alt="Album Cover" id="album-cover" class="hidden">
     </div>
-    <p>Drag and drop an audio file and a cover image.</p>
-    <input type="file" id="audio-input" accept="audio/*">
-    <input type="file" id="cover-input" accept="image/*">
-    <audio id="audio" controls class="hidden"></audio>
+    <p>Drag and drop an audio file to play it as a vinyl.</p>
+    <audio id="audio" class="hidden"></audio>
   </div>
 
   <script>
-    const audioInput = document.getElementById('audio-input');
-    const coverInput = document.getElementById('cover-input');
-    const audio = document.getElementById('audio');
     const vinyl = document.getElementById('vinyl');
     const albumCover = document.getElementById('album-cover');
+    const audio = document.getElementById('audio');
 
-    audioInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const audioURL = URL.createObjectURL(file);
-        audio.src = audioURL;
-        audio.classList.remove('hidden');
-        audio.play();
+    let isDragging = false;
+    let lastRotation = 0;
+
+    document.body.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    document.body.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        const file = files[0];
+        if (file.type.startsWith('audio/')) {
+          const audioURL = URL.createObjectURL(file);
+          audio.src = audioURL;
+          audio.classList.remove('hidden');
+          audio.play();
+
+          // Extract cover art if available
+          const jsmediatags = window.jsmediatags;
+          if (jsmediatags) {
+            jsmediatags.read(file, {
+              onSuccess: (tag) => {
+                if (tag.tags.picture) {
+                  const { data, format } = tag.tags.picture;
+                  let base64String = "";
+                  data.forEach((byte) => {
+                    base64String += String.fromCharCode(byte);
+                  });
+                  albumCover.src = `data:${format};base64,${btoa(base64String)}`;
+                  albumCover.classList.remove('hidden');
+                }
+              },
+              onError: (error) => {
+                console.error("Error extracting tags: ", error);
+              },
+            });
+          }
+        }
       }
     });
 
-    coverInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const coverURL = URL.createObjectURL(file);
-        albumCover.src = coverURL;
-        albumCover.classList.remove('hidden');
-        vinyl.style.backgroundImage = `url('${coverURL}')`;
+    audio.addEventListener('play', () => {
+      vinyl.classList.add('spinning');
+    });
+
+    audio.addEventListener('pause', () => {
+      vinyl.classList.remove('spinning');
+    });
+
+    audio.addEventListener('ended', () => {
+      vinyl.classList.remove('spinning');
+    });
+
+    vinyl.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      vinyl.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+      vinyl.style.cursor = 'grab';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        const rect = vinyl.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        const rotation = (angle * 180) / Math.PI;
+        vinyl.style.transform = `rotate(${rotation}deg)`;
+        lastRotation = rotation;
       }
     });
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 </body>
 </html>
