@@ -17,6 +17,53 @@
             -webkit-text-fill-color: transparent;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
             cursor: pointer;
+            animation: rainbowText 5s infinite linear;
+        }
+
+        h1:hover {
+            animation: shake 0.5s infinite;
+        }
+
+        h1:active {
+            animation: shake-crazy 0.1s infinite;
+        }
+
+        @keyframes rainbowText {
+            0% { color: red; }
+            16% { color: orange; }
+            33% { color: yellow; }
+            49% { color: green; }
+            66% { color: blue; }
+            82% { color: indigo; }
+            100% { color: violet; }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        @keyframes shake-crazy {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-2px, -4px) rotate(-2deg); }
+            20% { transform: translate(-6px, 0px) rotate(2deg); }
+            30% { transform: translate(6px, 4px) rotate(0deg); }
+            40% { transform: translate(2px, -2px) rotate(2deg); }
+            50% { transform: translate(-2px, 4px) rotate(-2deg); }
+            60% { transform: translate(-6px, 2px) rotate(0deg); }
+            70% { transform: translate(6px, 2px) rotate(-2deg); }
+            80% { transform: translate(-2px, -2px) rotate(2deg); }
+            90% { transform: translate(2px, 4px) rotate(0deg); }
+            100% { transform: translate(2px, -4px) rotate(-2deg); }
         }
 
         p {
@@ -89,6 +136,7 @@
         const title = document.getElementById('roadmap-title');
         const pongGame = document.getElementById('pong-game');
         let timeout;
+        let score = 0;
 
         title.addEventListener('mousedown', () => {
             timeout = setTimeout(() => {
@@ -115,6 +163,27 @@
             let paddleHeight = 10, paddleWidth = 75, paddleX = (canvas.width - paddleWidth) / 2;
             let rightPressed = false, leftPressed = false;
             let ballRadius = 10, x = canvas.width / 2, y = canvas.height - 30, dx = 2, dy = -2;
+
+            const blockRowCount = 5;
+            const blockColumnCount = 8;
+            const blockWidth = 75;
+            const blockHeight = 20;
+            const blockPadding = 10;
+            const blockOffsetTop = 30;
+            const blockOffsetLeft = 30;
+            const blocks = [];
+
+            for(let c = 0; c < blockColumnCount; c++) {
+                blocks[c] = [];
+                for(let r = 0; r < blockRowCount; r++) {
+                    blocks[c][r] = { x: 0, y: 0, status: 1, color: getRandomColor() };
+                }
+            }
+
+            function getRandomColor() {
+                const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
 
             document.addEventListener("keydown", keyDownHandler, false);
             document.addEventListener("keyup", keyUpHandler, false);
@@ -151,10 +220,56 @@
                 ctx.closePath();
             }
 
+            function drawBlocks() {
+                for(let c = 0; c < blockColumnCount; c++) {
+                    for(let r = 0; r < blockRowCount; r++) {
+                        if(blocks[c][r].status == 1) {
+                            const blockX = (c * (blockWidth + blockPadding)) + blockOffsetLeft;
+                            const blockY = (r * (blockHeight + blockPadding)) + blockOffsetTop;
+                            blocks[c][r].x = blockX;
+                            blocks[c][r].y = blockY;
+                            ctx.beginPath();
+                            ctx.rect(blockX, blockY, blockWidth, blockHeight);
+                            ctx.fillStyle = blocks[c][r].color;
+                            ctx.fill();
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+
+            function drawScore() {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#0095DD";
+                ctx.fillText("Score: " + score, 8, 20);
+            }
+
+            function collisionDetection() {
+                for(let c = 0; c < blockColumnCount; c++) {
+                    for(let r = 0; r < blockRowCount; r++) {
+                        const b = blocks[c][r];
+                        if(b.status == 1) {
+                            if(x > b.x && x < b.x + blockWidth && y > b.y && y < b.y + blockHeight) {
+                                dy = -dy;
+                                b.status = 0;
+                                score++;
+                                if(score == blockRowCount * blockColumnCount) {
+                                    alert("YOU WIN, CONGRATULATIONS!");
+                                    document.location.reload();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawBlocks();
                 drawBall();
                 drawPaddle();
+                drawScore();
+                collisionDetection();
 
                 if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
                     dx = -dx;
