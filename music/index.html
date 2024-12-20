@@ -15,6 +15,30 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
+    }
+
+    #drop-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: 2px dashed #fff;
+      border-radius: 10px;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #drop-area.show {
+      opacity: 1;
+      visibility: visible;
     }
 
     .player-container {
@@ -55,18 +79,21 @@
 
     .visualizer {
       margin-top: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
     }
 
-    .bar {
-      width: 3px;
-      height: 30px;
-      background: #fff;
-      display: inline-block;
-      margin: 0 1px;
+    canvas {
+      display: block;
     }
   </style>
 </head>
 <body>
+  <div id="drop-area">Drop audio files here</div>
   <div class="player-container">
     <img src="cover.jpg" alt="Cover Art" class="cover-art">
     <div class="metadata">
@@ -78,13 +105,7 @@
       <button id="play"><i class="fas fa-play"></i></button>
       <button id="next"><i class="fas fa-forward"></i></button>
     </div>
-    <div class="visualizer">
-      <div class="bar" id="bar1"></div>
-      <div class="bar" id="bar2"></div>
-      <div class="bar" id="bar3"></div>
-      <div class="bar" id="bar4"></div>
-      <div class="bar" id="bar5"></div>
-    </div>
+    <div class="visualizer"></div>
   </div>
   <audio id="audio" src="song.mp3"></audio>
   <script>
@@ -92,6 +113,7 @@
     const playBtn = document.getElementById('play');
     const title = document.getElementById('title');
     const artist = document.getElementById('artist');
+    const dropArea = document.getElementById('drop-area');
 
     playBtn.addEventListener('click', () => {
       if (audio.paused) {
@@ -115,8 +137,8 @@
       const ctx = canvas.getContext('2d');
 
       document.querySelector('.visualizer').appendChild(canvas);
-      canvas.width = 300;
-      canvas.height = 100;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
       src.connect(analyser);
       analyser.connect(context.destination);
@@ -129,8 +151,7 @@
         requestAnimationFrame(draw);
         analyser.getByteFrequencyData(dataArray);
 
-        ctx.fillStyle = '#121212';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const barWidth = (canvas.width / bufferLength) * 2.5;
         let barHeight;
@@ -138,7 +159,11 @@
 
         for (let i = 0; i < bufferLength; i++) {
           barHeight = dataArray[i];
-          ctx.fillStyle = 'rgba(255, 255, 255, ' + (barHeight / 255) + ')';
+          const r = barHeight + 25 * (i/bufferLength);
+          const g = 250 * (i/bufferLength);
+          const b = 50;
+
+          ctx.fillStyle = `rgb(${r},${g},${b})`;
           ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
           x += barWidth + 1;
         }
@@ -146,6 +171,49 @@
 
       draw();
     }
+
+    // Drag and drop functionality
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    function highlight() {
+      dropArea.classList.add('show');
+    }
+
+    function unhighlight() {
+      dropArea.classList.remove('show');
+    }
+
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+      unhighlight();
+    }
+
+    function handleFiles(files) {
+      const file = files[0];
+      const url = URL.createObjectURL(file);
+      audio.src = url;
+      audio.play();
+      playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    }
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      window.addEventListener(eventName, preventDefaults, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      window.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      window.addEventListener(eventName, unhighlight, false);
+    });
+
+    window.addEventListener('drop', handleDrop, false);
   </script>
 </body>
 </html>
