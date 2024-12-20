@@ -1,1 +1,151 @@
-mmm
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Player</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .player-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .cover-art {
+      width: 100%;
+      border-radius: 15px;
+    }
+
+    .metadata {
+      margin-top: 15px;
+    }
+
+    .metadata h3, .metadata p {
+      margin: 5px 0;
+    }
+
+    .controls {
+      margin-top: 15px;
+    }
+
+    .controls button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+
+    .visualizer {
+      margin-top: 20px;
+    }
+
+    .bar {
+      width: 3px;
+      height: 30px;
+      background: #fff;
+      display: inline-block;
+      margin: 0 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="player-container">
+    <img src="cover.jpg" alt="Cover Art" class="cover-art">
+    <div class="metadata">
+      <h3 id="title">Song Title</h3>
+      <p id="artist">Artist Name</p>
+    </div>
+    <div class="controls">
+      <button id="prev"><i class="fas fa-backward"></i></button>
+      <button id="play"><i class="fas fa-play"></i></button>
+      <button id="next"><i class="fas fa-forward"></i></button>
+    </div>
+    <div class="visualizer">
+      <div class="bar" id="bar1"></div>
+      <div class="bar" id="bar2"></div>
+      <div class="bar" id="bar3"></div>
+      <div class="bar" id="bar4"></div>
+      <div class="bar" id="bar5"></div>
+    </div>
+  </div>
+  <audio id="audio" src="song.mp3"></audio>
+  <script>
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('play');
+    const title = document.getElementById('title');
+    const artist = document.getElementById('artist');
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      }
+    });
+
+    audio.addEventListener('play', () => {
+      visualize();
+    });
+
+    function visualize() {
+      const context = new AudioContext();
+      const src = context.createMediaElementSource(audio);
+      const analyser = context.createAnalyser();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      document.querySelector('.visualizer').appendChild(canvas);
+      canvas.width = 300;
+      canvas.height = 100;
+
+      src.connect(analyser);
+      analyser.connect(context.destination);
+      analyser.fftSize = 256;
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.fillStyle = '#121212';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let barHeight;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          barHeight = dataArray[i];
+          ctx.fillStyle = 'rgba(255, 255, 255, ' + (barHeight / 255) + ')';
+          ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+          x += barWidth + 1;
+        }
+      }
+
+      draw();
+    }
+  </script>
+</body>
+</html>
