@@ -83,6 +83,7 @@
             font-size: 3em;
             color: #ffcc00;
             text-shadow: 2px 2px 4px #000;
+            cursor: pointer;
         }
         .fireworks {
             position: absolute;
@@ -115,7 +116,7 @@
         </div>
     </div>
     <button class="fullscreen-toggle" onclick="toggleFullScreen()">Toggle Fullscreen</button>
-    <div id="special-event">Javier's Special Event 💣!</div>
+    <div id="special-event" onclick="confettiBomb()">Javier's Special Event 💣!</div>
     <canvas class="fireworks"></canvas>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -218,6 +219,26 @@
                 }
             });
             fireworks.start();
+        }
+
+        function confettiBomb() {
+            for (let i = 0; i < 2000; i++) {
+                createConfettiBomb();
+            }
+        }
+
+        function createConfettiBomb() {
+            const confetti = document.createElement('div');
+            confetti.innerText = '💣';
+            confetti.style.position = 'absolute';
+            confetti.style.top = Math.random() * window.innerHeight + 'px';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.fontSize = '20px';
+            document.body.appendChild(confetti);
+
+            setTimeout(() => {
+                confetti.remove();
+            }, 3000);
         }
 
         updateTimer();
