@@ -1,1 +1,91 @@
-tet
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown to Next Year</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ececec, #f5f5f5);
+            font-family: 'Arial', sans-serif;
+        }
+        .countdown {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .countdown h1 {
+            font-size: 2em;
+            margin: 0;
+            color: #333;
+        }
+        .countdown p {
+            font-size: 4em;
+            margin: 0;
+            color: #111;
+        }
+        .progress-bar {
+            width: 80%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar div {
+            height: 100%;
+            background: #4caf50;
+            width: 0;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown">
+        <h1>Countdown to Next Year</h1>
+        <p id="timer">00:00</p>
+    </div>
+    <div class="progress-bar">
+        <div id="progress"></div>
+    </div>
+
+    <script>
+        function updateTimer() {
+            const nextYear = new Date(new Date().getFullYear() + 1, 0, 1);
+            const now = new Date();
+            const distance = nextYear - now;
+
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('timer').textContent = 
+                ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+
+            const totalSecondsInYear = 365 * 24 * 60 * 60;
+            const elapsedSeconds = Math.floor((nextYear - now) / 1000);
+            const progressBarWidth = ((totalSecondsInYear - elapsedSeconds) / totalSecondsInYear) * 100;
+
+            document.getElementById('progress').style.width = progressBarWidth + '%';
+
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById('timer').textContent = "EXPIRED";
+                document.getElementById('progress').style.width = '100%';
+            }
+        }
+
+        updateTimer();
+        const x = setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
