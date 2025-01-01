@@ -136,9 +136,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.0.0/dist/fireworks.js"></script>
     <script>
-        let bombCount = 0;
-        let bombInterval;
-
         function updateTimer() {
             const eventDate = new Date(new Date().getFullYear(), 0, 10);
             const now = new Date();
@@ -242,24 +239,16 @@
         }
 
         function confettiBomb() {
-            bombCount = 0;
-            bombInterval = setInterval(createBomb, 1000 / 60 * 6); // Create bomb every 6 frames
-            setTimeout(() => clearInterval(bombInterval), 1000); // Stop after a second
+            setInterval(createBomb, 1000 / 60 * 6); // Create bomb every 6 frames indefinitely
         }
 
         function createBomb() {
-            if (bombCount >= 10) return;
-            bombCount++;
             const bomb = document.createElement('div');
             bomb.innerText = '💣';
             bomb.className = 'bomb';
             bomb.style.top = Math.random() * window.innerHeight + 'px';
             bomb.style.left = Math.random() * window.innerWidth + 'px';
             document.body.appendChild(bomb);
-
-            setTimeout(() => {
-                bomb.remove();
-            }, 3000);
         }
 
         updateTimer();
