@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Countdown to Javier's Special Event</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;700&display=swap');
+
         body, html {
             height: 100%;
             margin: 0;
@@ -13,7 +15,7 @@
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #2c3e50, #4a5a6a);
-            font-family: 'Arial', sans-serif;
+            font-family: 'Funnel Display', sans-serif;
             color: #ecf0f1;
             overflow: hidden;
         }
@@ -49,9 +51,20 @@
         }
         .progress-bar div {
             height: 100%;
-            background: linear-gradient(90deg, #1abc9c, #16a085);
             width: 0;
             transition: width 1s linear;
+        }
+        #progress-days {
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+        }
+        #progress-hours {
+            background: linear-gradient(90deg, #a1c4fd, #c2e9fb);
+        }
+        #progress-minutes {
+            background: linear-gradient(90deg, #fbc2eb, #a6c1ee);
+        }
+        #progress-seconds {
+            background: linear-gradient(90deg, #ffecd2, #fcb69f);
         }
         .fullscreen-toggle {
             margin-top: 20px;
