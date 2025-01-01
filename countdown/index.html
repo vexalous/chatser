@@ -32,7 +32,7 @@
             color: #ecf0f1;
         }
         .countdown p {
-            font-size: 4em;
+            font-size: 2em;
             margin: 0;
             color: #ecf0f1;
         }
@@ -43,6 +43,7 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         .progress-bar div {
             height: 100%;
@@ -80,10 +81,22 @@
 <body>
     <div class="countdown">
         <h1>Countdown to Javier's Special Event 💣</h1>
-        <p id="timer">00:00</p>
-    </div>
-    <div class="progress-bar">
-        <div id="progress"></div>
+        <p id="days">0 Days</p>
+        <div class="progress-bar">
+            <div id="progress-days"></div>
+        </div>
+        <p id="hours">00 Hours</p>
+        <div class="progress-bar">
+            <div id="progress-hours"></div>
+        </div>
+        <p id="minutes">00 Minutes</p>
+        <div class="progress-bar">
+            <div id="progress-minutes"></div>
+        </div>
+        <p id="seconds">00 Seconds</p>
+        <div class="progress-bar">
+            <div id="progress-seconds"></div>
+        </div>
     </div>
     <button class="fullscreen-toggle" onclick="toggleFullScreen()">Toggle Fullscreen</button>
     <div id="special-event">Javier's Special Event 💣!</div>
@@ -97,22 +110,41 @@
             const now = new Date();
             const distance = eventDate - now;
 
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            document.getElementById('timer').textContent = 
-                ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+            document.getElementById('days').textContent = days + ' Days';
+            document.getElementById('hours').textContent = ('0' + hours).slice(-2) + ' Hours';
+            document.getElementById('minutes').textContent = ('0' + minutes).slice(-2) + ' Minutes';
+            document.getElementById('seconds').textContent = ('0' + seconds).slice(-2) + ' Seconds';
 
-            const totalSecondsInYear = 365 * 24 * 60 * 60;
-            const elapsedSeconds = Math.floor((eventDate - now) / 1000);
-            const progressBarWidth = ((totalSecondsInYear - elapsedSeconds) / totalSecondsInYear) * 100;
+            const totalDays = 365;
+            const totalHours = 24;
+            const totalMinutes = 60;
+            const totalSeconds = 60;
 
-            document.getElementById('progress').style.width = progressBarWidth + '%';
+            const progressDaysWidth = ((totalDays - days) / totalDays) * 100;
+            const progressHoursWidth = ((totalHours - hours) / totalHours) * 100;
+            const progressMinutesWidth = ((totalMinutes - minutes) / totalMinutes) * 100;
+            const progressSecondsWidth = ((totalSeconds - seconds) / totalSeconds) * 100;
+
+            document.getElementById('progress-days').style.width = progressDaysWidth + '%';
+            document.getElementById('progress-hours').style.width = progressHoursWidth + '%';
+            document.getElementById('progress-minutes').style.width = progressMinutesWidth + '%';
+            document.getElementById('progress-seconds').style.width = progressSecondsWidth + '%';
 
             if (distance < 0) {
                 clearInterval(x);
-                document.getElementById('timer').textContent = "EXPIRED";
-                document.getElementById('progress').style.width = '100%';
+                document.getElementById('days').textContent = "0 Days";
+                document.getElementById('hours').textContent = "00 Hours";
+                document.getElementById('minutes').textContent = "00 Minutes";
+                document.getElementById('seconds').textContent = "00 Seconds";
+                document.getElementById('progress-days').style.width = '100%';
+                document.getElementById('progress-hours').style.width = '100%';
+                document.getElementById('progress-minutes').style.width = '100%';
+                document.getElementById('progress-seconds').style.width = '100%';
                 document.getElementById('special-event').style.display = 'block';
                 startFireworks();
             }
