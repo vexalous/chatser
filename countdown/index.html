@@ -94,6 +94,19 @@
             height: 100%;
             pointer-events: none;
         }
+        .bomb {
+            position: absolute;
+            font-size: 20px;
+            animation: growBomb 0.5s forwards;
+        }
+        @keyframes growBomb {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -123,6 +136,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.0.0/dist/fireworks.js"></script>
     <script>
+        let bombCount = 0;
+        let bombInterval;
+
         function updateTimer() {
             const eventDate = new Date(new Date().getFullYear(), 0, 10);
             const now = new Date();
@@ -169,11 +185,14 @@
         }
 
         function toggleFullScreen() {
+            const fullscreenButton = document.querySelector('.fullscreen-toggle');
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
+                fullscreenButton.style.display = 'none'; // Hide button in fullscreen
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
+                    fullscreenButton.style.display = 'block'; // Show button when exiting fullscreen
                 }
             }
         }
@@ -223,22 +242,23 @@
         }
 
         function confettiBomb() {
-            for (let i = 0; i < 2000; i++) {
-                createConfettiBomb();
-            }
+            bombCount = 0;
+            bombInterval = setInterval(createBomb, 1000 / 60 * 6); // Create bomb every 6 frames
+            setTimeout(() => clearInterval(bombInterval), 1000); // Stop after a second
         }
 
-        function createConfettiBomb() {
-            const confetti = document.createElement('div');
-            confetti.innerText = '💣';
-            confetti.style.position = 'absolute';
-            confetti.style.top = Math.random() * window.innerHeight + 'px';
-            confetti.style.left = Math.random() * window.innerWidth + 'px';
-            confetti.style.fontSize = '20px';
-            document.body.appendChild(confetti);
+        function createBomb() {
+            if (bombCount >= 10) return;
+            bombCount++;
+            const bomb = document.createElement('div');
+            bomb.innerText = '💣';
+            bomb.className = 'bomb';
+            bomb.style.top = Math.random() * window.innerHeight + 'px';
+            bomb.style.left = Math.random() * window.innerWidth + 'px';
+            document.body.appendChild(bomb);
 
             setTimeout(() => {
-                confetti.remove();
+                bomb.remove();
             }, 3000);
         }
 
