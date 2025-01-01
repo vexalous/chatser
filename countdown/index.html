@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Countdown to Next Year</title>
+    <title>Countdown to Javier's Special Event</title>
     <style>
         body, html {
             height: 100%;
@@ -61,7 +61,7 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        #happy-new-year {
+        #special-event {
             display: none;
             font-size: 3em;
             color: #ffcc00;
@@ -79,23 +79,23 @@
 </head>
 <body>
     <div class="countdown">
-        <h1>Countdown to Next Year</h1>
+        <h1>Countdown to Javier's Special Event 💣</h1>
         <p id="timer">00:00</p>
     </div>
     <div class="progress-bar">
         <div id="progress"></div>
     </div>
     <button class="fullscreen-toggle" onclick="toggleFullScreen()">Toggle Fullscreen</button>
-    <div id="happy-new-year">Happy New Year!</div>
+    <div id="special-event">Javier's Special Event 💣!</div>
     <canvas class="fireworks"></canvas>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.0.0/dist/fireworks.js"></script>
     <script>
         function updateTimer() {
-            const nextYear = new Date(new Date().getFullYear() + 1, 0, 1);
+            const eventDate = new Date(new Date().getFullYear(), 0, 10);
             const now = new Date();
-            const distance = nextYear - now;
+            const distance = eventDate - now;
 
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -104,7 +104,7 @@
                 ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
 
             const totalSecondsInYear = 365 * 24 * 60 * 60;
-            const elapsedSeconds = Math.floor((nextYear - now) / 1000);
+            const elapsedSeconds = Math.floor((eventDate - now) / 1000);
             const progressBarWidth = ((totalSecondsInYear - elapsedSeconds) / totalSecondsInYear) * 100;
 
             document.getElementById('progress').style.width = progressBarWidth + '%';
@@ -113,7 +113,7 @@
                 clearInterval(x);
                 document.getElementById('timer').textContent = "EXPIRED";
                 document.getElementById('progress').style.width = '100%';
-                document.getElementById('happy-new-year').style.display = 'block';
+                document.getElementById('special-event').style.display = 'block';
                 startFireworks();
             }
         }
