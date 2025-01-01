@@ -96,7 +96,6 @@
         }
         .bomb {
             position: absolute;
-            font-size: 20px;
             animation: growBomb 0.5s forwards;
         }
         @keyframes growBomb {
@@ -239,13 +238,15 @@
         }
 
         function confettiBomb() {
-            setInterval(createBomb, 1000 / 60 * 6); // Create bomb every 6 frames indefinitely
+            setInterval(createBomb, 1000 / 60 * 3); // Create bomb every 3 frames indefinitely
         }
 
         function createBomb() {
             const bomb = document.createElement('div');
             bomb.innerText = '💣';
             bomb.className = 'bomb';
+            const size = Math.random() * 30 + 20; // Random size between 20px and 50px
+            bomb.style.fontSize = size + 'px';
             bomb.style.top = Math.random() * window.innerHeight + 'px';
             bomb.style.left = Math.random() * window.innerWidth + 'px';
             document.body.appendChild(bomb);
