@@ -14,17 +14,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(135deg, #2c3e50, #4a5a6a);
+            background: #000000; /* AMOLED black */
             font-family: 'Funnel Display', sans-serif;
             color: #ecf0f1;
             overflow: hidden;
+            text-align: center; /* Center text content */
         }
         .countdown {
             background: rgba(44, 62, 80, 0.2);
             border-radius: 10px;
             backdrop-filter: blur(10px);
             padding: 20px;
-            text-align: center;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             margin-bottom: 20px;
         }
@@ -33,6 +33,7 @@
             margin: 0;
             color: #ecf0f1;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            cursor: pointer; /* Make clickable */
         }
         .countdown p {
             font-size: 2em;
@@ -97,7 +98,7 @@
 </head>
 <body>
     <div class="countdown">
-        <h1>Countdown to Javier's Special Event 💣</h1>
+        <h1 onclick="confettiBomb()">Countdown to Javier's Special Event 💣</h1>
         <p id="days">0 Days</p>
         <div class="progress-bar">
             <div id="progress-days"></div>
