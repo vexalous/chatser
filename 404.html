@@ -8,6 +8,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://kit.fontawesome.com/84032f67dc.js" crossorigin="anonymous" async></script>
   <script src="https://cdn.tailwindcss.com" defer></script>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header, main, footer {
+      width: 100%;
+    }
+    footer {
+      background-color: #1a1a1a;
+      color: #ccc;
+      padding: 1rem 0;
+      text-align: center;
+    }
+    footer a {
+      color: #ccc;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body class="bg-gray-900">
   <header>
@@ -63,12 +87,23 @@
     </nav>
   </header>
 
-  <main class="container mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6">
+  <main class="container mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-6 flex-grow">
     <div class="bg-gray-800 p-6 rounded-md shadow-md">
-      <h2 class="text-2xl font-semibold text-white mb-6 text-center">Error 404: Page Not Found</h2>
-      <p class="text-gray-300 text-center">The page you requested was not found. <a href="../index.html" class="hover:bg-gray-700 hover:text-white">Click here</a> to head back.</p>
+      <h2 class="text-2xl font-semibold text-white mb-6 text-center animate__animated animate__fadeInDown">Error 404: Page Not Found</h2>
+      <p class="text-gray-300 text-center animate__animated animate__fadeInUp">The page you requested was not found. <a href="../index.html" class="hover:bg-gray-700 hover:text-white">Click here</a> to head back.</p>
     </div>
   </main>
+
+  <footer>
+    <div class="container mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      <p>&copy; 2025 Chatser. All rights reserved.</p>
+      <p>
+        <a href="../terms" class="mr-4">Terms of Service</a>
+        <a href="../privacy" class="mr-4">Privacy Policy</a>
+        <a href="../contact">Contact Us</a>
+      </p>
+    </div>
+  </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
